@@ -1,0 +1,133 @@
+<?php
+
+namespace TV\HZ\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
+
+class IntentionalElementsCommand extends Command
+{
+    protected function configure()
+    {
+        $this
+            ->setName('index:intentionalelements')
+            ->setDescription('Add all intentional elements to the index (excluding SKOS concepts).')
+        ;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        global $container;
+        $es = $container->get('elasticsearch');
+        $ask = $container->get('ask');
+        $formatter = $container->get('formatter');
+
+        $output->writeln('<bg=yellow;options=bold>Add intentional elements to the index (excluding SKOS concepts)</bg=yellow;options=bold>');
+
+        # Load SKOS Concepts via ASK
+        $output->writeln('- Loading intentional elements (ASK) ...');
+        $elements = $ask->query('
+        [[Category:Intentional Element]]
+        [[Context::+]]
+        |?skos:definition
+        |?Concerns
+        |?Dct:subject
+        |?Context
+        ');
+        $n = count($elements);
+        $output->writeln("  $n found.");
+
+        # Load all paragraphs via ASK and construct an array of raw
+        # page contents.
+        $output->writeln('- Loading page paragraphs (ASK) ...');
+        $paragraphs = $ask->query('
+        [[Paragraph::+]]
+        [[Paragraph back link::<q>[[Category:Intentional Element]]</q>]]
+        |?Paragraph
+        |?Paragraph subheading
+        |?Paragraph language
+        |?Paragraph number
+        |?Paragraph back link
+        ');
+        $m = count($paragraphs);
+        $output->writeln("  $m found.");
+        $page_contents = array();
+        foreach ($paragraphs as $p) {
+            $url = $p->printouts->{'Paragraph back link'}[0]->fullurl;
+            $content = $p->printouts->{'Paragraph'}[0];
+            @$page_contents[$url] .= strip_tags($content) . " ";
+        }
+
+        # Actually index the concepts
+        $output->writeln("- Creating index ...\n");
+        $progress = new ProgressBar($output, $n);
+        $progress->setMessage('Starting ...');
+        $progress->setFormat("  %current%/%max% [%bar%] %percent%% \n  %message%");
+        $progress->start();
+        $skos=0;
+        foreach ($elements as $c) {
+
+            $progress->advance();
+
+            // Skip SKOS concepts
+            if (count($c->printouts->{"Skos:definition"}) > 0) {
+                $skos++;
+                continue;
+            }
+
+            $url = $c->fullurl;
+
+            // $output->writeln("  {$formatter->prettify($c)}");
+            $progress->setMessage($formatter->prettify($c));
+
+            $content = "";
+            if (isset($page_contents[$url])) 
+                $content = $page_contents[$url];
+
+            // make a list of terms for auto completion
+            // $autoCompleteInput = explode(" ",$c->fulltext);
+            $autoCompleteInput = array();
+            $autoCompleteInput[] = $c->fulltext;
+
+
+            // find the VN pages
+            $query = "[[Model link::{$c->fulltext}]]";
+            $vns = $ask->query($query);
+            $vnurls = array();
+            foreach ($vns as $key => $value) {
+              $vnurls[] = $value->fullurl;
+            }
+
+            $context_readable = implode($formatter->texts($c->printouts->{'Context'}), " ");
+            $params['body'] = array(
+              "url" => $c->fullurl,
+              "title" => $c->fulltext,
+              "content" => $content,
+              "concerns_readable" => implode($formatter->texts($c->printouts->{'Concerns'}), " "),
+              "concerns" => $formatter->urls($c->printouts->{'Concerns'}),
+              "subject" => $formatter->urls($c->printouts->{'Dct:subject'}),
+              "context_readable"=> $context_readable,
+              "context"=> $formatter->urls($c->printouts->{'Context'}),
+              "vn_pages" => $vnurls,
+              "suggest" => array(
+                "input" => $autoCompleteInput,
+                "output" => $c->fulltext,
+                "payload" => array("url" => $c->fullurl,"vn_pages" => $vnurls,"context" => $context_readable, "type" => 'intentional')
+              )
+            );
+            $params['index'] = $container->getParameter('elastic.index');
+            $params['type'] = 'intentional_element';
+            $params['id'] = md5($c->fullurl);
+            $ret = $es->index($params);
+
+        }
+        $progress->setMessage('Done.');
+        $progress->finish();
+        $output->writeln('');
+        $output->writeln('  <info>Skipped ' . $skos . ' SKOS concepts.</info>');
+    }
+}

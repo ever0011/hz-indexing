@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . "/../vendor/autoload.php";
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+# Set up the Dependency Injection Container
+$container = new ContainerBuilder();
+$loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+$loader->load(__DIR__ . '/../services.yml');
+
+# Start the Application and add the necessary commands
+$application = new Application();
+
+$application->add(new \TV\HZ\Command\ResetCommand);
+$application->add(new \TV\HZ\Command\SkosConceptsCommand);
+$application->add(new \TV\HZ\Command\IntentionalElementsCommand);
+$application->add(new \TV\HZ\Command\ContextsCommand);
+$application->add(new \TV\HZ\Command\ResourceDescriptionsCommand);
+
+// testing
+$application->add(new \TV\HZ\Command\Md5Command);
+
+$application->run();

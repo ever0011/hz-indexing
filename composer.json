@@ -1,0 +1,13 @@
+{
+  "require": {
+    "symfony/console": "2.6.*@dev",
+    "symfony/dependency-injection": "2.3.*@dev",
+    "symfony/yaml": "2.6.*@dev",
+    "symfony/config": "2.6.*@dev",
+    "elasticsearch/elasticsearch": "~1.0",
+    "smalot/pdfparser": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {"TV\\HZ\\": "src/"}
+  }
+}
