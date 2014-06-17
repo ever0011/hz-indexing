@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This file is part of the indexing code for the semantic search engine of
+ * the HzBwNature wiki. 
+ *
+ * It was developed by Thijs Vogels (t.vogels@me.com) for the HZ University of
+ * Applied Sciences.
+ */
+
 namespace TV\HZ\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -10,9 +18,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use TV\HZ\FileReader;
 
+/**
+ * This command updates all Resource Descriptions in the index
+ * 
+ * @author Thijs Vogels <t.vogels@me.com>
+ */
 class ResourceDescriptionsCommand extends Command
 {
 
+    /**
+     * Private dictionary with extensions and their type
+     */
     private $extensions_map = array(
         "jpeg" => "image",
         "jpg" => "image",
@@ -28,6 +44,14 @@ class ResourceDescriptionsCommand extends Command
         "pptx" => "ms-powerpoint"
     );
 
+    /**
+     * This maps extensions to their type
+     * If the type is unknown, it is seen as a type of its own
+     * 
+     * @param string $extension
+     * 
+     * @return string output file type
+     */
     private function mapExtension($extension)
     {
         if(array_key_exists($extension, $this->extensions_map)) {
@@ -37,6 +61,15 @@ class ResourceDescriptionsCommand extends Command
         }
     }
 
+    /**
+     * This returns an instance of the appropriate reader class
+     * for a certain file type.
+     * 
+     * @param string $type File type (defined in $extensions_map)
+     * @param string $fullpath Path to the file
+     * 
+     * @return FileReader file reader object.
+     */
     private function getReader($type, $fullpath)
     {
         switch ($type) {
@@ -58,6 +91,9 @@ class ResourceDescriptionsCommand extends Command
         }
     }
 
+    /**
+     * This configures the command.
+     */
     protected function configure()
     {
         $this
@@ -66,6 +102,12 @@ class ResourceDescriptionsCommand extends Command
         ;
     }
 
+    /**
+     * This executes the command.
+     * 
+     * @param Symfony\Component\Console\Input\InputInterface $input
+     * @param Symfony\Component\Console\Input\OutputInterface $output
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         global $container;
@@ -77,7 +119,7 @@ class ResourceDescriptionsCommand extends Command
 
         # Load SKOS Concepts via ASK
         $output->writeln('- Loading resource descriptions (ASK) ...');
-        $elements = $ask->query('
+        $out = $ask->query('
         [[Category:Resource Description]]
         [[Dct:title::+]]
         |?Dct:title
@@ -87,6 +129,7 @@ class ResourceDescriptionsCommand extends Command
         |?Dct:subject
         |?Hyperlink
         ');
+        $elements = $out->getResults();
         $n = count($elements);
         $output->writeln("  $n found.");
 
@@ -109,9 +152,11 @@ class ResourceDescriptionsCommand extends Command
             $hyperlink = false;
             $link = null;
             // case of a File
-            if (preg_match("@(Bestand|Media|File):(.*\.([a-z]+))$@i", $c->fullurl, $matches))
-            {
-
+            if (preg_match(
+                "@(Bestand|Media|File):(.*\.([a-z]+))$@i", 
+                $c->getUrl(), 
+                $matches
+            )) {
 
                 $filename = $matches[2];
                 $md5 = md5($filename);
@@ -131,10 +176,10 @@ class ResourceDescriptionsCommand extends Command
 
             }
             // hyperlink
-            elseif (count($c->printouts->Hyperlink) > 0)
+            elseif (count($c->urls('hyperlink')) > 0)
             {
                 $hyperlink = true;
-                $link = $c->printouts->Hyperlink[0];
+                $link = $c->urls_cs('hyperlink');
             }
             else 
             {
@@ -142,33 +187,35 @@ class ResourceDescriptionsCommand extends Command
                 continue;
             }
 
-            $autoCompleteInput = array();
-            $autoCompleteInput[] = implode(", ",$c->printouts->{'Dct:title'});
+            $autoCompleteInput[] = $c->values('dct_title');
 
-            $context_readable = "TODO";
-            $contexts = ["TODO"];
 
             $params['body'] = array(
-                "url" => $c->fullurl,
-                "title" => implode(", ",$c->printouts->{'Dct:title'}),
-                "creator" => implode(", ",$c->printouts->{'Dct:creator'}),
-                "date" => implode(", ",$c->printouts->{'Dct:date'}),
-                "description" => implode(", ",$c->printouts->{'Dct:description'}),
-                "subject" => $formatter->urls($c->printouts->{'Dct:subject'}),
-                "filename" => $c->fulltext,
+                "url" => $c->getUrl(),
+                "title" => $c->values_cs('dct_title'),
+                "creator" => $c->values_cs('dct_creator'),
+                "date" => $c->values_cs('dct_date'),
+                "description" => $c->values_cs('dct_description'),
+                "subject" => $c->urls('dct_subject'),
+                "filename" => $c->getName(),
                 "content" => $filecontents,
-                "context_readable"=> $context_readable,
-                "context"=> $contexts,
+                "context_readable"=> 'TODO',
+                "context"=> 'TODO',
                 "vn_pages" => array(),
                 "suggest" => array(
                     "input" => $autoCompleteInput,
-                    "output" => $c->fulltext,
-                    "payload" => array("url" => $c->fullurl,"vn_pages" => array(),"context" => $context_readable, "type" => 'intentional')
+                    "output" => $c->getName(),
+                    "payload" => array(
+                        "url" => $c->getUrl(),
+                        "vn_pages" => array(),
+                        "context" => 'TODO',
+                        "type" => 'resource_description'
+                    )
                 )
             );
             $params['index'] = $container->getParameter('elastic.index');
             $params['type'] = 'resource_description';
-            $params['id'] = md5($c->fullurl);
+            $params['id'] = md5($c->getUrl());
             $ret = $es->index($params);
         }
 

@@ -1,0 +1,14 @@
+imports:
+  - { resource: "parameters.yml" }
+
+services:
+  ask:
+    class:      TV\HZ\Ask\Api
+    arguments:  ["%wiki.host%"]
+  formatter:
+    class:      TV\HZ\Formatter
+  elasticsearch:
+    class:      Elasticsearch\Client
+  indexer.context:
+    class:      TV\HZ\Indexer\ContextIndexer
+    arguments:  ["@ask", "@elasticsearch","%elastic.index%"]

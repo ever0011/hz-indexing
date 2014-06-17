@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * This file is part of the indexing code for the semantic search engine of
+ * the HzBwNature wiki. 
+ *
+ * It was developed by Thijs Vogels (t.vogels@me.com) for the HZ University of
+ * Applied Sciences.
+ */
+
 namespace TV\HZ\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -22,75 +30,35 @@ class ContextsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         global $container;
-        $es = $container->get('elasticsearch');
         $ask = $container->get('ask');
-        $formatter = $container->get('formatter');
+        $indexer = $container->get('indexer.context');
 
         $output->writeln('<bg=yellow;options=bold>Add contexts to the index</bg=yellow;options=bold>');
 
-        # Load SKOS Concepts via ASK
+        # Load contexts via Ask
         $output->writeln('- Loading contexts (ASK) ...');
-        $contexts = $ask->query('
-        [[Category:Context]]
-        |?Category
-        |?Supercontext
-        ');
+        $contexts = $ask->query('[[Category:Context]]')->getResults();
         $n = count($contexts);
-        $output->writeln("  $n found.");
+        $output->writeln(sprintf("  %d found.", $n));
 
-        $output->writeln('- Add to the index ...');
-        # Index the contexts
-        foreach ($contexts as $c) {
+        # Set up a progress indicator
+        $output->writeln("- Creating index ...\n");
+        $progress = new ProgressBar($output, $n);
+        $progress->setMessage('Starting ...');
+        $progress->setFormat("  %current%/%max% [%bar%] %percent%% \n  %message%");
+        $progress->start();
 
-            // Display
-            $output->writeln("  <info>" . $formatter->prettify($c) . "</info>");
-
-            // make a list of terms for auto completion
-            // $autoCompleteInput = explode(" ",$c->fulltext);
-            $autoCompleteInput = array();
-            $autoCompleteInput[] = $c->fulltext;
-
-            // find the VN pages
-            $query = "[[Model link::{$c->fulltext}]]";
-            $vns = $ask->query($query);
-            $vnurls = array();
-            foreach ($vns as $key => $value) {
-              $vnurls[] = $value->fullurl;
-            }
-
-            // Add to the index
-            $params = array();
-            $super = 'ROOT';
-            if (count($c->printouts->{'Supercontext'}) > 0) 
-              $super = $c->printouts->{'Supercontext'}[0]->fullurl;
-
-            $super_readable = '';
-            if (count($c->printouts->{'Supercontext'}) > 0) 
-              $super_readable = $c->printouts->{'Supercontext'}[0]->fulltext;
-
-            $params['body'] = array(
-                'url' => $c->fullurl,
-                'name' => $c->fulltext,
-                'supercontext' => $super,
-                'category' => $formatter->urls($c->printouts->{'Category'}),
-                'category_readable' => $formatter->texts($c->printouts->{'Category'}),
-                'vn_pages' => $vnurls,
-                "suggest" => array(
-                    "input" => $autoCompleteInput,
-                    "output" => $c->fulltext,
-                    "payload" => array(
-                        "url" => $c->fullurl,
-                        "context" => $super_readable,
-                        'vn_pages' => $vnurls,
-                        "type"=>'context'
-                    )
-                )
-            );
-            $params['index'] = $container->getParameter('elastic.index');
-            $params['type'] = 'context';
-            $params['id'] = md5($c->fullurl);
-            $ret = $es->index($params);
+        # Do the actual indexing
+        foreach ($contexts as $context) {
+            $progress->setMessage($context->getName());
+            $indexer->index($context->getName());
+            $progress->advance();
         }
-        $output->writeln("Done.");
+
+        # Finish up
+        $progress->setMessage('Done.');
+        $progress->finish();
+        $output->writeln('');
+
     }
 }

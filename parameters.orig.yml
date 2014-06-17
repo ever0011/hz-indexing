@@ -4,12 +4,3 @@ parameters:
   elastic.tmpdir:       /tmp/elasticindex
   elastic.skosn3file:   /Users/thijs/Development/internship/skos/hzbwnature.n3
   upload.dir:           /Users/thijs/Development/wiki.local/images
-
-services:
-  ask:
-    class:      TV\HZ\AskApi
-    arguments:  ["%wiki.host%"]
-  formatter:
-    class:      TV\HZ\Formatter
-  elasticsearch:
-    class:      Elasticsearch\Client
