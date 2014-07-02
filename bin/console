@@ -22,6 +22,7 @@ $application->add(new \TV\HZ\Command\SkosConceptsCommand);
 $application->add(new \TV\HZ\Command\IntentionalElementsCommand);
 $application->add(new \TV\HZ\Command\ContextsCommand);
 $application->add(new \TV\HZ\Command\ResourceDescriptionsCommand);
+$application->add(new \TV\HZ\Command\AllCommand);
 
 // testing
 $application->add(new \TV\HZ\Command\Md5Command);
