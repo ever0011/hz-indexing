@@ -12,7 +12,6 @@ namespace TV\HZ;
 
 class Formatter {
 
-
   # This prettifies objects returned by the ASK api.
   public function prettify($obj) {
     if (isset($obj->fullurl)) {
