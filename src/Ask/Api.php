@@ -31,13 +31,27 @@ class Api
     private $host;
 
     /**
+     * HTTP Basic User (optional)
+     */
+    private $user;
+
+    /**
+     * HTTP Basic pwd
+     */
+    private $pass;
+
+
+
+    /**
      * Constructor
      * 
      * @param string $host The URL of the wiki (will be used as $host/api.php)
      */
-    public function __construct($host)
+    public function __construct($host, $user, $pass)
     {
         $this->host = $host;
+        $this->user = $user;
+        $this->pass = $pass;
     }
 
     /**
@@ -53,10 +67,17 @@ class Api
     {
         $url = self::PROTOCOL . '://' . $this->host . self::API_SCRIPT;
 
-        $json = file_get_contents(
-            "{$url}?action=ask&format=json&query=" . 
+        // Curl GET Request
+        $curl = curl_init(
+            $url . "?action=ask&format=json&query=" . 
             urlencode("{$q}|limit=" . self::RETURN_LIMIT)
         );
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        if ($this->user != '') {
+          curl_setopt($curl, CURLOPT_USERPWD, $this->user . ":" . $this->pass);
+        }
+        $json = curl_exec($curl);
+        curl_close($curl);
 
         if (false === $json) {
             throw new \Exception(sprintf("Cannot connect to the ask api."));
