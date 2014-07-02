@@ -15,3 +15,6 @@ services:
   indexer.skos:
     class:      TV\HZ\Indexer\SkosIndexer
     arguments:  ["@ask", "@elasticsearch","%elastic.index%"]
+  indexer.intentionalelement:
+    class:      TV\HZ\Indexer\IntentionalElementIndexer
+    arguments:  ["@ask", "@elasticsearch","%elastic.index%"]

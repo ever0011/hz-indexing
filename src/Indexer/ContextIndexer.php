@@ -40,11 +40,6 @@ class ContextIndexer extends IndexerAbstract
             $super = $supers[0];
         }
 
-        $super_readable = '';
-        if (count($supers = $data->values('supercontext')) > 0) {
-            $super = $supers[0];
-        }
-
         $params['body'] = array(
             'url' =>                $data->getUrl(),
             'name' =>               $data->getName(),

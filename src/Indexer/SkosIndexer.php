@@ -145,70 +145,9 @@ class SkosIndexer extends IndexerAbstract
         |?Paragraph back link
         ';
         $paragraphs = $this->ask->query($query)->getResults();
-
         return array_map(function ($p) {
-            return $p->values('paragraph-subheading') . ": " . $p->values('paragraph');
+            return $p->values_cs('paragraph_subheading') . ": " . $p->values_cs('paragraph');
         }, $paragraphs);
     }
 
-    public function old () {
-                # Actually index the concepts
-        $output->writeln("- Creating index ...\n");
-        $progress = new ProgressBar($output, $n);
-        $progress->setMessage('Starting ...');
-        $progress->setFormat("  %current%/%max% [%bar%] %percent%% \n  %message%");
-        $progress->start();
-        foreach ($concepts as $c) {
-
-            $url = $c->fullurl;
-
-            // $output->writeln("  {$formatter->prettify($c)}");
-            $progress->setMessage($formatter->prettify($c));
-
-            $content = "";
-            if (isset($page_contents[$url])) 
-                $content = $page_contents[$url];
-
-            // find the VN pages
-            $query = "[[Model link::{$c->fulltext}]]";
-            $vns = $ask->query($query);
-            $vnurls = array();
-            foreach ($vns as $key => $value) {
-              $vnurls[] = $value->fullurl;
-            }
-
-            $context_readable = implode($formatter->texts($c->printouts->{'Context'}), " ");
-
-            // Add to index
-            $params = array();
-            $params['body'] = array(
-                "url" => $c->fullurl,
-                "title" => $c->fulltext,
-                "skos:prefLabel" => $c->fulltext,
-                "skos:altLabel" =>$c->printouts->{'Skos:altLabel'},
-                "skos:definition" =>$c->printouts->{'Skos:definition'},
-                "skos:related" => $formatter->urls($c->printouts->{'Skos:related'}),
-                "skos:narrower" => $formatter->urls($c->printouts->{'Skosem:narrower'}),
-                "skos:broader" => $formatter->urls($c->printouts->{'Skosem:broader'}),
-                "skos:partOf" => $formatter->urls($c->printouts->{'Skosem:partOf'}),
-                "context_readable"=> $context_readable,
-                "context"=> $formatter->urls($c->printouts->{'Context'}),
-                "content" => $content,
-                "suggest" => array(
-                    "input" => $c->fulltext,
-                    "output" => $c->fulltext,
-                    "payload" => array("url" => $c->fullurl,"vn_pages" => $vnurls,"context" => $context_readable, "type" => 'skos')
-                )
-            );
-            $params['index'] = $container->getParameter('elastic.index');
-            $params['type'] = 'skos_concept';
-            $params['id'] = md5($c->fullurl);
-            $ret = $es->index($params);
-
-            $progress->advance();
-        }
-        $progress->setMessage('Done.');
-        $progress->finish();
-        $output->writeln('');
-    }
 }
