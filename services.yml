@@ -3,12 +3,15 @@ imports:
 
 services:
   ask:
-    class:      TV\HZ\Ask\Api
-    arguments:  ["%wiki.host%","%http.user%","%http.password%"]
+    class:      TV\HZ\Ask\ApiInternal
+    # arguments:  ["%wiki.host%","%http.user%","%http.password%"]
   formatter:
     class:      TV\HZ\Formatter
   elasticsearch:
     class:      Elasticsearch\Client
   indexer.context:
     class:      TV\HZ\Indexer\ContextIndexer
+    arguments:  ["@ask", "@elasticsearch","%elastic.index%"]
+  indexer.skos:
+    class:      TV\HZ\Indexer\SkosIndexer
     arguments:  ["@ask", "@elasticsearch","%elastic.index%"]

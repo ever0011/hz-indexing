@@ -52,7 +52,6 @@ class Output
     {
         // set the available properties
         foreach ($askOutput->query->printrequests as $property) {
-
             if ($property->label == "") {
                 continue;
             }
