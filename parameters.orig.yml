@@ -1,5 +1,7 @@
 parameters:
   wiki.host:            wiki.local
+  http.user:            
+  http.password:        
   elastic.index:        hzbwnature
   elastic.tmpdir:       /tmp/elasticindex
   elastic.skosn3file:   /Users/thijs/Development/internship/skos/hzbwnature.n3

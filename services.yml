@@ -4,7 +4,7 @@ imports:
 services:
   ask:
     class:      TV\HZ\Ask\Api
-    arguments:  ["%wiki.host%"]
+    arguments:  ["%wiki.host%","%http.user%","%http.password%"]
   formatter:
     class:      TV\HZ\Formatter
   elasticsearch:
