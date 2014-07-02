@@ -18,3 +18,6 @@ services:
   indexer.intentionalelement:
     class:      TV\HZ\Indexer\IntentionalElementIndexer
     arguments:  ["@ask", "@elasticsearch","%elastic.index%"]
+  indexer.resourcedescription:
+    class:      TV\HZ\Indexer\ResourceDescriptionIndexer
+    arguments:  ["@ask", "@elasticsearch","%elastic.index%","%upload.dir%"]
