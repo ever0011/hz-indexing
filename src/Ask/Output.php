@@ -48,21 +48,21 @@ class Output
      * 
      * @param \StdClass $askOutput Result of an ask query
      */
-    public function __construct(\StdClass $askOutput)
+    public function __construct($askOutput)
     {
         // set the available properties
-        foreach ($askOutput->query->printrequests as $property) {
-            if ($property->label == "") {
+        foreach ($askOutput['query']['printrequests'] as $property) {
+            if ($property['label'] == "") {
                 continue;
             }
 
-            $label = self::processLabelName($property->label);
+            $label = self::processLabelName($property['label']);
             $this->properties[] = $label;
-            $this->propertyTypes[$label] = $property->typeid;
+            $this->propertyTypes[$label] = $property['typeid'];
         }
 
         // convert raw results to something neat
-        $this->results = $this->convertToArray($askOutput->query->results);
+        $this->results = $this->convertToArray($askOutput['query']['results']);
     }
 
     /**

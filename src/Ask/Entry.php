@@ -35,14 +35,14 @@ class Entry
      *        as keys and their types as values
      * @param \StdClass $entry entry for this particular result
      */
-    public function __construct($propertyTypes, \StdClass $entry)
+    public function __construct($propertyTypes, array $entry)
     {
         $this->propertyTypes = $propertyTypes;
 
-        $this->data['name'] = $entry->fulltext;
-        $this->data['url'] = $entry->fullurl;
+        $this->data['name'] = $entry['fulltext'];
+        $this->data['url'] = $entry['fullurl'];
 
-        foreach ($entry->printouts as $key => $value) {
+        foreach ($entry['printouts'] as $key => $value) {
             $property = Output::processLabelName($key);
             $this->data[$property] = $value;
         }
@@ -78,7 +78,7 @@ class Entry
 
         switch ($this->propertyTypes[$property]) {
             case Output::URL_TYPE:
-                return array_map(function ($a) { return $a->fullurl; }, $data);
+                return array_map(function ($a) { return $a['fullurl']; }, $data);
 
             case Output::LINK_TYPE:
                 return array_map(function ($a) { return $a; }, $data);
@@ -107,7 +107,7 @@ class Entry
 
         switch ($this->propertyTypes[$property]) {
             case Output::URL_TYPE:
-                return array_map(function ($a) { return $a->fulltext; }, $data);
+                return array_map(function ($a) { return $a['fulltext']; }, $data);
             case Output::TXT_TYPE:
                 return $data;
             case Output::NUM_TYPE:

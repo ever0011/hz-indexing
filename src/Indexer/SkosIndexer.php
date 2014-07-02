@@ -31,40 +31,37 @@ class SkosIndexer extends IndexerAbstract
 
         $autoCompleteInput = $this->getAutocompleteInput($data);
         $vnUrls = $this->findVnPages($data);
-        $paragraphs = $this->findParagraphs($data);
+        // $paragraphs = $this->findParagraphs($data);
 
-        var_dump($paragraphs);
-return;        // Add to the index
+        // Add to the index
         $params = array();
 
-        $super = 'ROOT';
-        if (count($supers = $data->urls('supercontext')) > 0) {
-            $super = $supers[0];
-        }
-
-        $super_readable = '';
-        if (count($supers = $data->values('supercontext')) > 0) {
-            $super = $supers[0];
-        }
-
+        // Add to index
+        $params = array();
         $params['body'] = array(
-            'url' =>                $data->getUrl(),
-            'name' =>               $data->getName(),
-            'supercontext' =>       $super,
-            'category' =>           $data->urls('category'),
-            'category_readable' =>  $data->values_cs('category'),
-            'vn_pages' =>           $vnUrls,
+            "url" => $data->getUrl(),
+            "title" => $data->getName(),
+            "skos:prefLabel" => $data->getName(),
+            "skos:altLabel" =>$data->values('skos_altlabel'),
+            "skos:definition" =>$data->values_cs('skos_definition'),
+            "skos:related" => $data->urls('skos_related'),
+            "skos:narrower" => $data->urls('skosem_narrower'),
+            "skos:broader" => $data->urls('skosem_broader'),
+            "skos:partOf" => $data->urls('skosem_partof'),
+            "context_readable"=> $data->values_cs('context'),
+            "context"=> $data->urls('context'),
             "suggest" => array(
-                "input" =>          $autoCompleteInput,
-                "output" =>         $data->getName(),
+                "input" => $autoCompleteInput,
+                "output" => $data->getName(),
                 "payload" => array(
-                    "url" =>        $data->getUrl(),
-                    "context" =>    $super_readable,
-                    'vn_pages' =>   $vnUrls,
-                    "type" =>       self::TYPE
+                    "url" => $data->getUrl(),
+                    "vn_pages" => $vnUrls,
+                    "context" => $data->values_cs('context'), 
+                    "type" => self::TYPE
                 )
             )
         );
+
         $params['index'] = $this->index;
         $params['type'] = self::TYPE;
         $params['id'] = $this->getPageId($data);
@@ -139,9 +136,8 @@ return;        // Add to the index
      */
     public function findParagraphs(\TV\HZ\Ask\Entry $data)
     {
-        $query = '
-        [[Paragraph::+]]
-        [[Paragraph back link::'+$data->getName()+']]
+        $query = '[[Paragraph::+]]
+        [[Paragraph back link::'.$data->getName().']]
         |?Paragraph
         |?Paragraph subheading
         |?Paragraph language
@@ -151,7 +147,7 @@ return;        // Add to the index
         $paragraphs = $this->ask->query($query)->getResults();
 
         return array_map(function ($p) {
-            return $p->get('paragraph-subheading') . ": " . $p->get('paragraph');
+            return $p->values('paragraph-subheading') . ": " . $p->values('paragraph');
         }, $paragraphs);
     }
 

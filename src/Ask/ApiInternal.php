@@ -50,7 +50,7 @@ class ApiInternal
         $api = new \ApiMain( $params );
         $api->execute();
         $result = $api->getResultData();
-        return new Output(json_decode(json_encode($result)));
+        return new Output($result);
     }
 
 }
