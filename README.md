@@ -15,5 +15,6 @@ Symlink your
 * `extensions`
 * `langauges`
 * `includes`
+* `skins`
 
 to the root of this project.

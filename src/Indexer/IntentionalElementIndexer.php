@@ -30,7 +30,6 @@ class IntentionalElementIndexer extends IndexerAbstract
         $data = $this->getData($name);
         
         if (count($data->values("skos_definition")) > 0) {
-            $skos++;
             return;
         }
 
