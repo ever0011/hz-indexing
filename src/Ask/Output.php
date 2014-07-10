@@ -28,6 +28,8 @@ class Output
 
     const LINK_TYPE = "_uri";
 
+    const STRING_TYPE = "_str";
+
     /**
      * Neat results
      */

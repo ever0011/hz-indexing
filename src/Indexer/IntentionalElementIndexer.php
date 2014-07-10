@@ -9,6 +9,7 @@
  */
 
 namespace TV\HZ\Indexer;
+use TV\HZ\Ask\Entry;
 
 /**
  * This class is meant to index contexts
@@ -50,9 +51,9 @@ class IntentionalElementIndexer extends IndexerAbstract
           "vn_pages" =>             $vnUrls,
           "suggest" => array(
             "input" =>              $autoCompleteInput,
-            "output" =>             $data->getName(),
+            "output" =>             $data->getNiceTitle(),
             "payload" => array(
-                "url" =>            $data->getName(),
+                "url" =>            $data->getNiceTitle(),
                 "vn_pages" =>       $vnUrls,
                 "context" =>        $data->values_cs('context'), 
                 "type" => self::TYPE
@@ -80,6 +81,8 @@ class IntentionalElementIndexer extends IndexerAbstract
             |?Concerns
             |?Dct:subject
             |?Context
+            |?" . Entry::TITLE_PROPERTY . "
+            |?" . Entry::HEADING_PROPERTY . "
         ")->getResults();
 
         if (count($output) == 0) {
@@ -98,7 +101,7 @@ class IntentionalElementIndexer extends IndexerAbstract
      */
     public function getAutocompleteInput(\TV\HZ\Ask\Entry $data)
     {
-        return $data->getName();
+        return array($data->getNiceTitle(),$data->getName());
     }
 
     /**

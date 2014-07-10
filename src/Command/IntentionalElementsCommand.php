@@ -50,9 +50,10 @@ class IntentionalElementsCommand extends Command
         $n_errors = 0;
         # Do the actual indexing
         foreach ($concepts as $concept) {
-            // if (strstr($concept->getName(),"=")) {
-            //     continue;
-            // }
+            if (strstr($concept->getName(),"=")) {
+                $n_errors++;
+                continue;
+            }
             $progress->setMessage($concept->getName());
             try {
                 $indexer->index(str_replace("=","{{=}}",$concept->getName()));

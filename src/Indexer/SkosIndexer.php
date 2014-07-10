@@ -9,6 +9,8 @@
  */
 
 namespace TV\HZ\Indexer;
+use TV\HZ\Ask\Entry;
+
 
 /**
  * This class is meant to index contexts
@@ -41,7 +43,7 @@ class SkosIndexer extends IndexerAbstract
         $params['body'] = array(
             "url" => $data->getUrl(),
             "title" => $data->getName(),
-            "skos:prefLabel" => $data->getName(),
+            "skos:prefLabel" => $data->getNiceTitle(),
             "skos:altLabel" =>$data->values('skos_altlabel'),
             "skos:definition" =>$data->values_cs('skos_definition'),
             "skos:related" => $data->urls('skos_related'),
@@ -52,7 +54,7 @@ class SkosIndexer extends IndexerAbstract
             "context"=> $data->urls('context'),
             "suggest" => array(
                 "input" => $autoCompleteInput,
-                "output" => $data->getName(),
+                "output" => $data->getNiceTitle(),
                 "payload" => array(
                     "url" => $data->getUrl(),
                     "vn_pages" => $vnUrls,
@@ -87,6 +89,8 @@ class SkosIndexer extends IndexerAbstract
             |?skosem:partOf
             |?skos:definition
             |?Context
+            |?" . Entry::TITLE_PROPERTY . "
+            |?" . Entry::HEADING_PROPERTY . "
         ")->getResults();
 
         if (count($output) == 0) {
@@ -105,7 +109,7 @@ class SkosIndexer extends IndexerAbstract
      */
     public function getAutocompleteInput(\TV\HZ\Ask\Entry $data)
     {
-        return $data->getName();
+        return array($data->getNiceTitle(),$data->getName());
     }
 
     /**

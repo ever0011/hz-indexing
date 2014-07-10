@@ -29,6 +29,12 @@ class Entry
     private $propertyTypes;
 
     /**
+     * Properties
+     */
+    const TITLE_PROPERTY = "DS page title";
+    const HEADING_PROPERTY = "Heading nl";
+
+    /**
      * Constructor
      * 
      * @param array $propertyTypes associative array with propertys 
@@ -116,6 +122,8 @@ class Entry
                 return array_map(function ($a) { return gmdate('d-m-Y', $a); }, $data);
             case Output::LINK_TYPE:
                 return $data;
+            case Output::STRING_TYPE:
+                return $data;
             default:
                 throw new \Exception(sprintf(
                     "Property type '%s' is not supported", 
@@ -170,6 +178,30 @@ class Entry
     public function getUrl()
     {
         return $this->data['url'];
+    }
+
+    /**
+     * Return a neatly formatted title.
+     * 
+     * try these
+     * 1) heading nl property
+     * 2) ds page title property
+     * 3) page name
+     * 
+     * @return title
+     */
+    public function getNiceTitle()
+    {
+        $pagetitle = $this->values_cs(Output::processLabelName(self::TITLE_PROPERTY));
+        $heading = $this->values_cs(Output::processLabelName(self::HEADING_PROPERTY));
+        if ($pagetitle != "") {
+            return $pagetitle;
+        } else if ($heading != "") {
+            return $heading;
+        } else {
+            return $this->data['name'];
+        }
+        // return $this->data['name'];
     }
 
     /**
