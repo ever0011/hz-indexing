@@ -75,7 +75,7 @@ class IntentionalElementIndexer extends IndexerAbstract
     private function getData($name)
     {
         $output = $this->ask->query("
-            [[{$name}]]
+            [[" . $name . "]]
             |?skos:definition
             |?Concerns
             |?Dct:subject

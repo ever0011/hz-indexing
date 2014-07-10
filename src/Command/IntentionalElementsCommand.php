@@ -47,11 +47,19 @@ class IntentionalElementsCommand extends Command
         $progress->setMessage('Starting ...');
         $progress->setFormat("  %current%/%max% [%bar%] %percent%% \n  %message%");
         $progress->start();
-
+        $n_errors = 0;
         # Do the actual indexing
         foreach ($concepts as $concept) {
+            // if (strstr($concept->getName(),"=")) {
+            //     continue;
+            // }
             $progress->setMessage($concept->getName());
-            $indexer->index($concept->getName());
+            try {
+                $indexer->index(str_replace("=","{{=}}",$concept->getName()));
+            } catch (\MWException $e) {
+                // maybe some nice error handling here ...
+                $n_errors++;
+            }
             $progress->advance();
         }
 
@@ -59,5 +67,6 @@ class IntentionalElementsCommand extends Command
         $progress->setMessage('Done.');
         $progress->finish();
         $output->writeln('');
+        $output->writeln("{$n_errors} errors!");
     }
 }
