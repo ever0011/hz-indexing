@@ -52,7 +52,7 @@ class ContextIndexer extends IndexerAbstract
                 "output" =>         $data->getName(),
                 "payload" => array(
                     "url" =>        $data->getUrl(),
-                    "context" =>    $super_readable,
+                    "context" =>    $data->values_cs('supercontext'),
                     'vn_pages' =>   $vnUrls,
                     "type" =>       self::TYPE
                 )
