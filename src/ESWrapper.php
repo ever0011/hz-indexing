@@ -11,7 +11,6 @@ class ESWrapper extends \Elasticsearch\Client
 {
   public function __construct($host)
   {
-    // param : array('hosts' => array($host))
-    return parent::__construct();
+    return parent::__construct(array('hosts' => array($host)));
   }
 }
