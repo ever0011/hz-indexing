@@ -80,6 +80,21 @@ class ResetCommand extends Command
             "index_analyzer" => "my_analyzer",
             "search_analyzer" => "my_analyzer"
         );  
+        $indexParams['body']['mappings']['_default_']['properties']['name'] = array (
+            "type" => "multi_field",
+            "fields" => array(
+                "name" => array(
+                    "type" => "string"
+                ), 
+                "untouched" => array(
+                    "type" => "string",
+                    "index" => "not_analyzed"
+                )
+            )
+        );  
+
+
+
         $indexParams['body']['mappings']['_default_']['properties']['suggest'] = array (
             "type" => "completion",
             "index_analyzer" => "simple",
