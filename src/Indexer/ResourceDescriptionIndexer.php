@@ -81,7 +81,7 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         else 
         {
             $noFileCount++;
-            continue;
+            return;
         }
 
         $autoCompleteInput[] = $data->values('dct_title');
