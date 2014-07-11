@@ -48,6 +48,7 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         $filepath = "";
         $hyperlink = false;
         $link = null;
+        $notFoundCount = 0;
         // case of a File
         if (preg_match(
             "@(Bestand|Media|File):(.*\.([a-z]+))$@i", 
@@ -66,7 +67,11 @@ class ResourceDescriptionIndexer extends IndexerAbstract
 
             if (file_exists($fullpath)) {
                 $reader = $this->getReader($extension_type, $fullpath);
-                $filecontents = $reader->result();
+                try {
+                    $filecontents = $reader->result();
+                } catch (\Exception $e) {
+                    $filecontents = "";
+                }
             } else {
                 $notFoundCount++;
             }
