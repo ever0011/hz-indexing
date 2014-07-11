@@ -8,7 +8,8 @@ services:
   formatter:
     class:      TV\HZ\Formatter
   elasticsearch:
-    class:      Elasticsearch\Client
+    class:      TV\HZ\ESWrapper
+    arguments:  ["%elastic.server%"]
   indexer.context:
     class:      TV\HZ\Indexer\ContextIndexer
     arguments:  ["@ask", "@elasticsearch","%elastic.index%"]
