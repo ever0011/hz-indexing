@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the indexing code for the semantic search engine of
- * the HzBwNature wiki. 
+ * the HzBwNature wiki.
  *
  * It was developed by Thijs Vogels (t.vogels@me.com) for the HZ University of
  * Applied Sciences.
@@ -13,7 +13,7 @@ use TV\HZ\FileReader;
 
 /**
  * This class is meant to index contexts
- * 
+ *
  * @author Thijs Vogels <t.vogels@me.com>
  */
 class ResourceDescriptionIndexer extends IndexerAbstract
@@ -32,11 +32,12 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         $this->es = $es;
         $this->index = $index;
         $this->uploadDir = $uploadDir;
+        $this->noFileCount = 0;
     }
 
     /**
      * This does the actual indexing
-     * 
+     *
      * @param string $name The name of the context to be indexed
      */
     public function index($name)
@@ -51,8 +52,8 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         $notFoundCount = 0;
         // case of a File
         if (preg_match(
-            "@(Bestand|Media|File):(.*\.([a-z]+))$@i", 
-            $data->getUrl(), 
+            "@(Bestand|Media|File):(.*\.([a-z]+))$@i",
+            $data->getUrl(),
             $matches
         )) {
 
@@ -60,7 +61,7 @@ class ResourceDescriptionIndexer extends IndexerAbstract
             $md5 = md5($filename);
             $filepath = "/" . $md5[0] . "/" . substr($md5, 0,2) . "/" . $filename;
             $fullpath = $this->uploadDir . $filepath;
-            
+
             // determine extension & type
             $extension = strtolower($matches[3]);
             $extension_type = $this->mapExtension($extension);
@@ -83,9 +84,9 @@ class ResourceDescriptionIndexer extends IndexerAbstract
             $hyperlink = true;
             $link = $data->urls_cs('hyperlink');
         }
-        else 
+        else
         {
-            $noFileCount++;
+            $this->noFileCount++;
             return;
         }
 
@@ -124,9 +125,9 @@ class ResourceDescriptionIndexer extends IndexerAbstract
 
     /**
      * This gets the data from ASK
-     * 
+     *
      * @param string $name The name of the context to be indexed
-     * 
+     *
      * @throws \Exception
      */
     private function getData($name)
@@ -150,9 +151,9 @@ class ResourceDescriptionIndexer extends IndexerAbstract
 
     /**
      * Get the autocomplete input from data
-     * 
+     *
      * @param \TV\HZ\Ask\Entry $data
-     * 
+     *
      * @return string id
      */
     public function getAutocompleteInput(\TV\HZ\Ask\Entry $data)
@@ -162,9 +163,9 @@ class ResourceDescriptionIndexer extends IndexerAbstract
 
     /**
      * Get the VN pages for a page
-     * 
+     *
      * @param \TV\HZ\Ask\Entry $data
-     * 
+     *
      * @return array urls
      */
     public function findVnPages(\TV\HZ\Ask\Entry $data)
@@ -181,9 +182,9 @@ class ResourceDescriptionIndexer extends IndexerAbstract
 
     /**
      * Get the paragraphs connected to the page
-     * 
+     *
      * @param \TV\HZ\Ask\Entry $data
-     * 
+     *
      * @return array paragraphs
      */
     public function findParagraphs(\TV\HZ\Ask\Entry $data)
@@ -225,9 +226,9 @@ class ResourceDescriptionIndexer extends IndexerAbstract
     /**
      * This maps extensions to their type
      * If the type is unknown, it is seen as a type of its own
-     * 
+     *
      * @param string $extension
-     * 
+     *
      * @return string output file type
      */
     private function mapExtension($extension)
@@ -242,10 +243,10 @@ class ResourceDescriptionIndexer extends IndexerAbstract
     /**
      * This returns an instance of the appropriate reader class
      * for a certain file type.
-     * 
+     *
      * @param string $type File type (defined in $extensions_map)
      * @param string $fullpath Path to the file
-     * 
+     *
      * @return FileReader file reader object.
      */
     private function getReader($type, $fullpath)
