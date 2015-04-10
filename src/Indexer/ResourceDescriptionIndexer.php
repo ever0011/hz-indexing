@@ -50,6 +50,7 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         $hyperlink = false;
         $link = null;
         $notFoundCount = 0;
+
         // case of a File
         if (preg_match(
             "@(Bestand|Media|File):(.*\.([a-z]+))$@i",
@@ -87,11 +88,18 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         else
         {
             $this->noFileCount++;
-            return;
+            return "noFileOrHyperlink";
         }
 
         $autoCompleteInput[] = $data->values('dct_title');
 
+        //WME debugging - //WME: prevent index exception with certain contents
+        // $filecontents = strlen($filecontents);
+        // $filecontents = quoted_printable_encode($filecontents);
+        $filecontents = utf8_encode($filecontents);
+        // $filecontents = addslashes($filecontents); //geeft ook die empty doc fout
+        //$filecontents = mb_convert_encoding($filecontents, "EUC-JP", "auto");
+        // print_r($filecontents);exit;
 
         $params['body'] = array(
             "url" => $data->getUrl(),
@@ -120,7 +128,22 @@ class ResourceDescriptionIndexer extends IndexerAbstract
         $params['type'] = self::TYPE;
         $params['id'] = $this->getPageId($data);
 
-        return $this->es->index($params);
+        //WME debugging
+        // echo "FILENAME: ".$params['body']['filename']."\n";
+        // echo "CONTENT: ".$params['body']['content']."\n";
+        // echo "MEM_USAGE: ".memory_get_peak_usage()."\n";
+
+        //WME TODO/FIXME: use bulk indexing of eleastic search.
+
+        try{
+          $stat = array("hyperlink"     => $hyperlink,
+                        "notFoundCount" => $notFoundCount);
+          $res = $this->es->index($params);
+          return array_merge($stat, (array)$res);
+        }
+        catch (Exception $e) {
+          echo 'WME Caught exception: ',  $e->getMessage(), "\n";
+        }
     }
 
     /**

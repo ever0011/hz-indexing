@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8e0a9b150aad04a7b9738db4d554133a",
+    "hash": "d2d423f3e5d3768646b3583e74be52b8",
     "packages": [
         {
             "name": "elasticsearch/elasticsearch",
@@ -363,16 +363,16 @@
         },
         {
             "name": "smalot/pdfparser",
-            "version": "dev-master",
+            "version": "v0.9.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smalot/pdfparser.git",
-                "reference": "b5c4745bff4c83ac4d6018e20e4817186f1310eb"
+                "reference": "9d3a71bdf7bdef7b2e1ccbdc1be67d4cc736299d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/b5c4745bff4c83ac4d6018e20e4817186f1310eb",
-                "reference": "b5c4745bff4c83ac4d6018e20e4817186f1310eb",
+                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/9d3a71bdf7bdef7b2e1ccbdc1be67d4cc736299d",
+                "reference": "9d3a71bdf7bdef7b2e1ccbdc1be67d4cc736299d",
                 "shasum": ""
             },
             "require": {
@@ -402,7 +402,7 @@
             ],
             "description": "Pdf parser library. Can read and extract information from pdf file.",
             "homepage": "http://www.pdfparser.org",
-            "time": "2014-07-07 12:22:57"
+            "time": "2015-03-18 08:17:46"
         },
         {
             "name": "symfony/config",
@@ -786,24 +786,17 @@
             "time": "2014-07-09 18:21:01"
         }
     ],
-    "packages-dev": [
-
-    ],
-    "aliases": [
-
-    ],
+    "packages-dev": [],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/console": 20,
         "symfony/dependency-injection": 20,
         "symfony/yaml": 20,
-        "symfony/config": 20,
-        "smalot/pdfparser": 20
+        "symfony/config": 20
     },
-    "platform": [
-
-    ],
-    "platform-dev": [
-
-    ]
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
 }

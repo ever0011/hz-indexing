@@ -5,7 +5,7 @@
     "symfony/yaml": "2.6.*@dev",
     "symfony/config": "2.6.*@dev",
     "elasticsearch/elasticsearch": "~1.0",
-    "smalot/pdfparser": "*",
+    "smalot/pdfparser": "dev-master",
     "incenteev/composer-parameter-handler": "~2.0"
   },
   "autoload": {
