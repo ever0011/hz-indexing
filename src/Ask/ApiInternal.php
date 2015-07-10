@@ -35,6 +35,7 @@ class ApiInternal
      *
      * @param string $q The ask query
      * @param int $limit Limit the number of results (optional, defaults to self::RETURN_LIMIT)
+     * @param int $offset
      *
      * @return TV\HZ\Ask\Output Output of the query
      *

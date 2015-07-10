@@ -103,7 +103,7 @@ class ResourceDescriptionsCommand extends Command
         $output->writeln("\nMemory Usage: ". memory_get_peak_usage()/1024/1024 . " MB.");
         $output->writeln('');
 
-        //WMEdebug, write to file or use fancy symfony shizzle
+        //WMEdebug, TODO write to file or use fancy symfony shizzle
         if($debug && isset($indexedDebug)) print_r($indexedDebug);
     }
 }
