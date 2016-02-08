@@ -110,8 +110,8 @@ class ResourceDescriptionIndexer extends IndexerAbstract
             "subject" => $data->urls('dct_subject'),
             "filename" => $data->getName(),
             "content" => $filecontents,
-            "context_readable"=> 'TODO',
-            "context"=> 'TODO',
+            "context_readable"=> 'TODO',                //TODO
+            "context"=> 'TODO',                         //TODO
             "vn_pages" => array(),
             "suggest" => array(
                 "input" => $autoCompleteInput,
@@ -119,7 +119,7 @@ class ResourceDescriptionIndexer extends IndexerAbstract
                 "payload" => array(
                     "url" => $data->getUrl(),
                     "vn_pages" => array(),
-                    "context" => 'TODO',
+                    "context" => 't.b.d.',              //TODO
                     "type" => 'resource_description'
                 )
             )
