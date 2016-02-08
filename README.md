@@ -5,16 +5,19 @@
 * Install [Composer](https://getcomposer.org)
 * Check out this repo
 * Copy `parameters.yml.orig` to `parameters.yml` and change settings.
-* Run `composer.phar install` to install dependencies.
+* Run `composer install` to install dependencies.
 
-## Symlink to enable wiki integration
+## Symlinks to enable wiki integration
 
 Symlink your
 
 * `LocalSettings.php`
-* `extensions`
-* `langauges`
 * `includes`
-* `skins`
 
 to the root of this project.
+
+## Set environment var for the wiki (used in WebStart.php)
+
+export MW_INSTALL_PATH=<the path to your specific wiki dir>
+
+e.g.: export MW_INSTALL_PATH=~/wikifarm/wikis/deltaexpertise/wiki
