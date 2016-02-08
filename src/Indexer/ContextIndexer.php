@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the indexing code for the semantic search engine of
- * the HzBwNature wiki. 
+ * the HzBwNature wiki.
  *
  * It was developed by Thijs Vogels (t.vogels@me.com) for the HZ University of
  * Applied Sciences.
@@ -12,7 +12,7 @@ namespace TV\HZ\Indexer;
 
 /**
  * This class is meant to index contexts
- * 
+ *
  * @author Thijs Vogels <t.vogels@me.com>
  */
 class ContextIndexer extends IndexerAbstract
@@ -22,19 +22,18 @@ class ContextIndexer extends IndexerAbstract
 
     /**
      * This does the actual indexing
-     * 
+     *
      * @param string $name The name of the context to be indexed
      */
     public function index($name)
     {
-        $data = $this->getData($name);
+        $data = $this->getData($name);  //that is: an object of class Entry
 
         $autoCompleteInput = $this->getAutocompleteInput($data);
         $vnUrls = $this->findVnPages($data);
 
         // Add to the index
         $params = array();
-
         $super = 'ROOT';
         if (count($supers = $data->urls('supercontext')) > 0) {
             $super = $supers[0];
@@ -44,8 +43,8 @@ class ContextIndexer extends IndexerAbstract
             'url' =>                $data->getUrl(),
             'name' =>               $data->getName(),
             'supercontext' =>       $super,
-            'category' =>           $data->urls('category'),
-            'category_readable' =>  $data->values_cs('category'),
+            'category' =>           $data->urls('categorie'),       //TODO internationalization!!! IN 1.24. stond hier nog category... in 1.25. moet hier categorie staan.
+            'category_readable' =>  $data->values_cs('categorie'),  //TODO internationalization!!! IN 1.24. stond hier nog category... in 1.25. moet hier categorie staan.
             'vn_pages' =>           $vnUrls,
             "suggest" => array(
                 "input" =>          $autoCompleteInput,
@@ -67,9 +66,9 @@ class ContextIndexer extends IndexerAbstract
 
     /**
      * This gets the data from ASK
-     * 
+     *
      * @param string $name The name of the context to be indexed
-     * 
+     *
      * @throws \Exception
      */
     private function getData($name)
@@ -89,9 +88,9 @@ class ContextIndexer extends IndexerAbstract
 
     /**
      * Get the autocomplete input from data
-     * 
+     *
      * @param \TV\HZ\Ask\Entry $data
-     * 
+     *
      * @return string id
      */
     public function getAutocompleteInput(\TV\HZ\Ask\Entry $data)
@@ -101,9 +100,9 @@ class ContextIndexer extends IndexerAbstract
 
     /**
      * Get the VN pages for a page
-     * 
+     *
      * @param \TV\HZ\Ask\Entry $data
-     * 
+     *
      * @return array urls
      */
     public function findVnPages(\TV\HZ\Ask\Entry $data)

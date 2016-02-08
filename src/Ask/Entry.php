@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the indexing code for the semantic search engine of
- * the HzBwNature wiki. 
+ * the HzBwNature wiki.
  *
  * It was developed by Thijs Vogels (t.vogels@me.com) for the HZ University of
  * Applied Sciences.
@@ -12,7 +12,7 @@ namespace TV\HZ\Ask;
 
 /**
  * Ask API Result entry class
- * 
+ *
  * @author Thijs Vogels <t.vogels@me.com>
  */
 class Entry
@@ -36,15 +36,14 @@ class Entry
 
     /**
      * Constructor
-     * 
-     * @param array $propertyTypes associative array with propertys 
+     *
+     * @param array $propertyTypes associative array with propertys
      *        as keys and their types as values
      * @param \StdClass $entry entry for this particular result
      */
     public function __construct($propertyTypes, array $entry)
     {
         $this->propertyTypes = $propertyTypes;
-
         $this->data['name'] = $entry['fulltext'];
         $this->data['url'] = $entry['fullurl'];
 
@@ -56,7 +55,7 @@ class Entry
 
     /**
      * Check if this entry has a certain property
-     * 
+     *
      * @param string $property property name (lowercase with underscores)
      * @return bool Does the entry have the given property?
      */
@@ -67,17 +66,17 @@ class Entry
 
     /**
      * Return an array of URLS for a property
-     * 
+     *
      * @param string $property property name (lowercase with underscores)
-     * 
+     *
      * @return array Returns an array of urls
-     * 
+     *
      * @throws \Exception
      */
     public function urls($property)
     {
         if (!$this->hasProperty($property)) {
-            throw new \Exception(sprintf("Property %s does not exist", $property));
+            throw new \Exception(sprintf("WME: Property %s does not exist", $property));
         }
 
         $data = $this->data[$property];
@@ -88,25 +87,25 @@ class Entry
 
             case Output::LINK_TYPE:
                 return array_map(function ($a) { return $a; }, $data);
-            
+
             default:
-                throw new \Exception(sprintf("Property %s does not have URL's", $property));
+                throw new \Exception(sprintf("WME: Property %s does not have URL's", $property));
         }
     }
 
     /**
      * Return an array of values for a property
-     * 
+     *
      * @param string $property property name (lowercase with underscores)
-     * 
+     *
      * @return array Returns an array of urls
-     * 
+     *
      * @throws \Exception
      */
     public function values($property)
     {
         if (!$this->hasProperty($property)) {
-            throw new \Exception(sprintf("Property %s does not exist", $property));
+            throw new \Exception(sprintf("WME: Property %s does not exist", $property));
         }
 
         $data = $this->data[$property];
@@ -126,7 +125,7 @@ class Entry
                 return $data;
             default:
                 throw new \Exception(sprintf(
-                    "Property type '%s' is not supported", 
+                    "WME: Property type '%s' is not supported",
                     $this->propertyTypes[$property]
                 ));
         }
@@ -134,11 +133,11 @@ class Entry
 
     /**
      * Return a comma separated list of URLS for a property
-     * 
+     *
      * @param string $property property name (lowercase with underscores)
-     * 
+     *
      * @return string Returns a comma separated list of urls
-     * 
+     *
      * @throws \Exception
      */
     public function urls_cs($property)
@@ -148,11 +147,11 @@ class Entry
 
     /**
      * Return a comma separated list of values for a property
-     * 
+     *
      * @param string $property property name (lowercase with underscores)
-     * 
+     *
      * @return string Returns a comma separated list of values
-     * 
+     *
      * @throws \Exception
      */
     public function values_cs($property)
@@ -162,7 +161,7 @@ class Entry
 
     /**
      * Return the name of the entry
-     * 
+     *
      * @return string name
      */
     public function getName()
@@ -172,7 +171,7 @@ class Entry
 
     /**
      * Return the URL of the entry
-     * 
+     *
      * @return string URL
      */
     public function getUrl()
@@ -182,12 +181,12 @@ class Entry
 
     /**
      * Return a neatly formatted title.
-     * 
+     *
      * try these
      * 1) heading nl property
      * 2) ds page title property
      * 3) page name
-     * 
+     *
      * @return title
      */
     public function getNiceTitle()
@@ -206,7 +205,7 @@ class Entry
 
     /**
      * Converts the class to a string
-     * 
+     *
      * @return string String representation of the class
      */
     public function __toString()
