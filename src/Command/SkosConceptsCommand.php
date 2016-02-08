@@ -36,7 +36,7 @@ class SkosConceptsCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Limit the number of skos concepts to index this run to the given limit',
-                100
+                1000
             )
             ->addOption(
                 'debug',
