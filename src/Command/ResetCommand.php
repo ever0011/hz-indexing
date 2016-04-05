@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the indexing code for the semantic search engine of
- * the HzBwNature wiki. 
+ * the HzBwNature wiki.
  *
  * It was developed by Thijs Vogels (t.vogels@me.com) for the HZ University of
  * Applied Sciences.
@@ -67,38 +67,33 @@ class ResetCommand extends Command
         );
         $indexParams['body']['mappings']['_default_']['properties']['subject'] = array (
             "type" => "string",
-            "index_analyzer" => "skos",
-            "search_analyzer" => "standard"
+            "analyzer" => "skos",       #WME: previously: "index_analyzer" => "skos",
+            "search_analyzer" => "standard"   #Specify when using another one for searching: "search_analyzer" => "standard"
         );
         $indexParams['body']['mappings']['_default_']['properties']['content'] = array (
             "type" => "string",
-            "index_analyzer" => "my_analyzer",
-            "search_analyzer" => "my_analyzer"
+            "analyzer" => "my_analyzer"  #WME: previously: "index_analyzer" => "my_analyzer","search_analyzer" => "my_analyzer"
         );
         $indexParams['body']['mappings']['_default_']['properties']['title'] = array (
             "type" => "string",
-            "index_analyzer" => "my_analyzer",
-            "search_analyzer" => "my_analyzer"
-        );  
+            "analyzer" => "my_analyzer"    #WME: previously: idem as for content
+        );
         $indexParams['body']['mappings']['_default_']['properties']['name'] = array (
             "type" => "multi_field",
             "fields" => array(
                 "name" => array(
                     "type" => "string"
-                ), 
+                ),
                 "untouched" => array(
                     "type" => "string",
                     "index" => "not_analyzed"
                 )
             )
-        );  
-
-
+        );
 
         $indexParams['body']['mappings']['_default_']['properties']['suggest'] = array (
             "type" => "completion",
-            "index_analyzer" => "simple",
-            "search_analyzer" => "simple",
+            "analyzer" => "simple",   #WME: previously "index_analyzer" => "simple","search_analyzer" => "simple",
             "payloads" => true
         );
 
