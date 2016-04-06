@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+if( !array_key_exists('MW_INSTALL_PATH', $_SERVER) )
+  exit("ERROR: MW_INSTALL_PATH not defined. Define an environment variable MW_INSTALL_PATH
+  to indicate the wiki (specific wiki core symlink) for which this indexer should work.\n\n");
 
 require __DIR__ . "/../includes/WebStart.php";  //TODO include from environment i.s.o. symlink?
 require __DIR__ . "/../vendor/autoload.php";
